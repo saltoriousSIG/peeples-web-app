@@ -39,7 +39,7 @@ export function VideoFeed() {
         <video
           ref={videoRef}
           key="video"
-          src="https://pub-7225440c18314cf09d504db7173350c7.r2.dev/1121_1.mp4"
+          src="https://pub-7225440c18314cf09d504db7173350c7.r2.dev/1211_1.mp4"
           className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-500"
           autoPlay
           loop
