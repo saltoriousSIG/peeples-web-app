@@ -7,6 +7,7 @@ import { useAccount, useConnect, useWriteContract } from "wagmi";
 import { CONTRACT_ADDRESSES, MULTICALL_ABI } from "@/lib/contracts";
 import { Address } from "viem";
 
+const DEADLINE_BUFFER_SECONDS = 15 * 60;
 
 const toBigInt = (value: bigint | number) =>
   typeof value === "bigint" ? value : BigInt(value);
