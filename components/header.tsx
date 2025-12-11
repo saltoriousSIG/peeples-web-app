@@ -45,12 +45,15 @@ export function Header() {
       </div>
 
       {/* Right - User Profile */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 sm:flex-col">
         <a href="https://glazed.world" target="_blank" className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/50">
           <Info className="w-4 h-4" />
         </a>
         <a href="https://dune.com/xyk/donut-company" target="_blank" className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/50">
           <BarChart3 className="w-4 h-4" />
+        </a>
+        <a href="https://dexscreener.com/base/0x2d3d5f71cf15bd2ae12a5ba87a8a1980efb6eef88f0f5e11cfddf52f02a761c8" target="_blank" className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/50">
+          <img src="/media/dexscreener.png" className="w-5 h-5 rounded" />
         </a>
         <a href="https://x.com/peeplesdonuts" target="_blank" className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/50">
           <img src="/media/x.jpg" className="w-5 h-5 rounded" />
