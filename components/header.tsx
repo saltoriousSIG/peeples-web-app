@@ -45,7 +45,7 @@ export function Header() {
       </div>
 
       {/* Right - User Profile */}
-      <div className="flex items-center gap-3 sm:flex-col">
+      <div className="flex items-center gap-3 flex-row xs:flex-col">
         <a href="https://glazed.world" target="_blank" className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/50">
           <Info className="w-4 h-4" />
         </a>
