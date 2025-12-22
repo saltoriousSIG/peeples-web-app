@@ -24,21 +24,29 @@ export function Header() {
       <div className="flex items-center bg-white/60 rounded-full p-0.5 shadow-sm border border-border/30">
         <button
           onClick={() => router.push("/")}
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-            pathname === "/"
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${pathname === "/"
+            ? "bg-primary text-primary-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+            }`}
         >
           Glaze
         </button>
+
+        <button
+          onClick={() => router.push("/auction")}
+          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${pathname === "/auction"
+            ? "bg-primary text-primary-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+            }`}
+        >
+          Auction
+        </button>
         <button
           onClick={() => router.push("/vote")}
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-            pathname === "/vote"
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${pathname === "/vote"
+            ? "bg-primary text-primary-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+            }`}
         >
           Vote
         </button>

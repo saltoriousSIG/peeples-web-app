@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { createContext, useContext, useCallback } from "react";
 import {
@@ -18,6 +19,7 @@ import {
   WITHDRAW,
   VOTE,
   CLAIM,
+  PEEPLES_AUCTION
 } from "../lib/contracts";
 import {
   PoolConfig,
@@ -43,7 +45,10 @@ interface PoolContextType {
   shareTokenTotalSupply?: bigint;
   hasUserVoted?: boolean;
   pendingClaim?: PendingClaim;
-  holders: {address: `0x${string}`; value: string}[];
+  currentAuction: any;
+  minAuctionBid: bigint;
+  holders: { address: `0x${string}`; value: string }[];
+  auctionBid: (amount: bigint, feeRecipient: Address) => Promise<void>;
   claim: () => void;
   deposit: (amount: number) => Promise<void>;
   withdraw: (amount: number) => void;
@@ -68,15 +73,15 @@ interface PoolProviderProps {
 export const PoolProvider: React.FC<PoolProviderProps> = ({ children }) => {
   const { address, isConnected } = useAccount();
 
-  const {data: holders, isLoading} = useQuery({
+  const { data: holders, isLoading } = useQuery({
     queryKey: ['pool-holders'],
     queryFn: async () => {
       const { data } = await axios.get("https://base.blockscout.com/api/v2/tokens/0xEcDdeE4B294230C24285D92c0Eab81E63B5c0655/holders");
-      return data.items.map((holder: any) => {
+      return data.items.map((holder: { address: { hash: `0x${string}` }; value: string }) => {
         return {
           address: holder.address.hash,
           value: holder.value
-        } 
+        }
       })
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -199,6 +204,29 @@ export const PoolProvider: React.FC<PoolProviderProps> = ({ children }) => {
     },
   });
 
+
+  const { data: currentAuction } = useReadContract({
+    address: CONTRACT_ADDRESSES.pool,
+    abi: PEEPLES_AUCTION,
+    functionName: "getCurrentAuction",
+    args: [],
+    chainId: base.id,
+    query: {
+      refetchInterval: 3_000,
+    },
+  });
+
+  const { data: minAuctionBid } = useReadContract({
+    address: CONTRACT_ADDRESSES.pool,
+    abi: PEEPLES_AUCTION,
+    functionName: "getMinimumBid",
+    args: [],
+    chainId: base.id,
+    query: {
+      refetchInterval: 1_000,
+    },
+  });
+
   const {
     data: txHash,
     writeContract,
@@ -213,7 +241,7 @@ export const PoolProvider: React.FC<PoolProviderProps> = ({ children }) => {
       chainId: base.id,
     });
 
-  const buyKingGlazer = useCallback(async() => {
+  const buyKingGlazer = useCallback(async () => {
     try {
       if (!isConnected || !address) {
         throw new Error("Wallet not connected");
@@ -322,7 +350,38 @@ export const PoolProvider: React.FC<PoolProviderProps> = ({ children }) => {
       }
     },
     [writeContractAsync, isConnected, address]
+
   );
+
+  const auctionBid = useCallback(async (amount: bigint, feeRecipient: Address) => {
+    try {
+      if (!isConnected || !address) {
+        throw new Error("Wallet not connected");
+      }
+
+      await writeContractAsync({
+        account: address as Address,
+        address: CONTRACT_ADDRESSES.peeples as Address,
+        abi: ERC20,
+        functionName: "approve",
+        args: [CONTRACT_ADDRESSES.pool as Address, BigInt(amount)],
+        chainId: base.id,
+      });
+
+      await sleep(3500);
+
+      writeContract({
+        account: address as Address,
+        address: CONTRACT_ADDRESSES.pool as Address,
+        abi: PEEPLES_AUCTION,
+        functionName: "bid",
+        args: [amount, feeRecipient],
+        chainId: base.id
+      });
+    } catch (e: any) {
+      alert(e.message);
+    }
+  }, [writeContract, isConnected, address])
 
   const value: PoolContextType = {
     config: config as PoolConfig,
@@ -330,6 +389,15 @@ export const PoolProvider: React.FC<PoolProviderProps> = ({ children }) => {
     state: state as PoolState,
     shareToken: addresses?.shareToken || "0x",
     isTxPending: isWriting,
+    currentAuction: {
+      auctionId: currentAuction && currentAuction[0],
+      endTime: currentAuction && currentAuction[1],
+      highestBidder: currentAuction && currentAuction[2],
+      highestBid: currentAuction && currentAuction[3],
+      feeRecipient: currentAuction && currentAuction[4],
+      ended: currentAuction && currentAuction[5],
+    },
+    minAuctionBid: minAuctionBid as bigint,
     deposit,
     claim,
     pendingClaim,
@@ -340,6 +408,7 @@ export const PoolProvider: React.FC<PoolProviderProps> = ({ children }) => {
     buyKingGlazer,
     hasUserVoted: hasUserVoted,
     vote,
+    auctionBid,
     holders,
     voteEpoch: voteEpoch as bigint,
     votes: votes as VoteType[],
