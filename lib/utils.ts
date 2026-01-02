@@ -71,7 +71,7 @@ export const sleep = (ms: number) =>
 
 export const STRATEGY_MULTIPLIER: Record<Strategy, number> = {
   [Strategy.CONSERVATIVE]: 1.0,
-  [Strategy.MODERATE]: 2.5,
+  [Strategy.MODERATE]: 2.3,
   [Strategy.AGGRESSIVE]: 3.0,
   [Strategy.DEGEN]: 3.5,
 };
